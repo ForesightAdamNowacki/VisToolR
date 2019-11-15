@@ -27,12 +27,12 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
                                 title_15 = "CIRCLE PACKING PLOT",
                                 
                                 # Additional parameters:
-                                text_size = 7, title_size = 9, histogram_bins = 8, numeric_cuts = 10,
+                                text_size = 7, title_size = 9,
                                 
                                 # Plot save parameters:
                                 plots_save = FALSE, save_filename = NULL, save_width = 40, save_height = 40, save_dpi = 500,
                                 
-                                # Grid display parameters::
+                                # Grid display parameters:
                                 plot_grid = matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 8, 12, 13, 14, 15), byrow = TRUE, ncol = 4)
 ){
   # Packages:
