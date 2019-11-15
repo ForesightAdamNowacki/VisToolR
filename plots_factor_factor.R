@@ -132,9 +132,7 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
                            panel.grid.minor.y = element_line(linetype = "blank"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") +
-            ggplot2::scale_y_continuous(limits = c(0, 1.1 * max(data_cut$percentage)),
-                                        labels = c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"),
-                                        breaks = c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)) +
+            ggplot2::scale_y_continuous(limits = c(0, 1.1 * max(data_cut$percentage)), labels = c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"), breaks = c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)) +
             ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_1_name)]])) + 1, "Greys")[-1]) -> plot2
 ################################################################################
           # PLOT 3:
@@ -579,7 +577,7 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") -> plot15
 ################################################################################             
-          dev.new()
+          grDevices::dev.new()
           plots <- gridExtra::grid.arrange(gridExtra::arrangeGrob(plot1, plot2, plot3, plot4,
                                                                   plot5, plot6, plot7, plot8,
                                                                   plot9, plot10, plot11, plot12,
