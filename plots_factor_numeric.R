@@ -2,7 +2,7 @@
 plots_factor_numeric <- function(data, factor_var, numeric_var,  
                                  
                                  # Sample data from original datatset to make faster function compilation:
-                                 data_size = 0.5, seed_value = 42,
+                                 data_size = 1.0, seed_value = 42,
                                  
                                  # Axis, labels:
                                  factor_axis = NULL, numeric_axis = NULL,  count_axis = "COUNT", percentage_axis = "PERCENTAGE", density_axis = "DENSITY", caption = NULL,
@@ -26,14 +26,13 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                                  title_16 = "DISTRIBUTION PLOT",
                                  
                                  # Additional parameters:
-                                 text_size = 7, title_size = 9, histogram_bins = 10, numeric_cuts = 10,
+                                 text_size = 7, title_size = 9, histogram_bins = 10, numeric_cuts = 10, grid_size = 50,
 
                                  # Plot save parameters:
-                                 plots_save = FALSE, save_filename = NULL, save_width = 40, save_height = 40, save_dpi = 1000,
+                                 plots_save = FALSE, save_filename = NULL, save_width = 40, save_height = 40, save_dpi = 500,
                                  
                                  # Grid display parameters:
                                  plot_grid = matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16), byrow = TRUE, ncol = 4)
-                                 
 ){
   # Packages:
   if (!require(ggplot2)){utils::install.packages('ggplot2'); require('ggplot2')}
@@ -68,7 +67,7 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
         base::print("INFO: Type of provided numeric_var is appropariate")
         if (base::is.null(factor_axis)){factor_axis <- "FACTOR VARIABLE"} else {factor_axis <- stringr::str_to_upper(factor_axis)}
         if (base::is.null(numeric_axis)){numeric_axis <- "NUMERIC VARIABLE"} else {numeric_axis <- stringr::str_to_upper(numeric_axis)}
-        if (base::is.null(caption)){caption <- "SOURCE: unknown data source"} else {caption <- stringr::str_to_upper(paste("SOURCE:", caption))}
+        if (base::is.null(caption)){caption <- "SOURCE: unknown data source"} else {caption <- stringr::str_to_upper(base::paste("SOURCE:", caption))}
         
         # Convert data to tibble:
         data <- dplyr::as_tibble(data)
@@ -81,15 +80,12 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
             dplyr::group_by(!!factor_var) %>% 
             dplyr::summarise(count = dplyr::n(), percentage = dplyr::n()/base::nrow(.)) -> data_cut
           data %>% 
-            dplyr::select(!!factor_var) -> var; var <- c(var); var <- unlist(var)
-          mean_value <- length(var)/length(unique(data[[which(names(data) == factor_var_name)]]))
-          
+            dplyr::select(!!factor_var) -> var; var <- c(var); var <- base::unlist(var)
+          mean_value <- base::length(var)/base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]]))
           ggplot2::ggplot(data = data_cut, mapping = aes(x = !!factor_var, y = count, label = count, fill = !!factor_var)) +
             ggplot2::geom_hline(yintercept = mean_value, lty = 2, lwd = 0.5, col = "black") +
             ggplot2::geom_bar(stat = "identity", position = "identity", color = "black") +
-            ggplot2::labs(x = factor_axis,
-                          y = count_axis,
-                          title = title_1) +
+            ggplot2::labs(x = factor_axis, y = count_axis, title = title_1) +
             ggplot2::geom_label(color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
@@ -107,19 +103,16 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            panel.grid.minor.y = element_line(linetype = "blank"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") +
-            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) +
-            ggplot2::scale_y_continuous(limits = c(0, 1.1 * max(data_cut$count))) -> plot1
-          
+            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) +
+            ggplot2::scale_y_continuous(limits = c(0, 1.1 * base::max(data_cut$count))) -> plot1
+################################################################################
           # PLOT 2:  
-          data %>% select(!!numeric_var) -> var; var <- c(var); var <- unlist(var)
-          mean_value <- (length(var)/length(unique(data[[which(names(data) == factor_var_name)]])))/length(var)
-          
-          ggplot2::ggplot(data = data_cut, mapping = aes(x = !!factor_var, y = percentage, fill = !!factor_var, label = paste(100 * round(percentage, 4), "%", sep = ""))) +
+          data %>% dplyr::select(!!numeric_var) -> var; var <- c(var); var <- base::unlist(var)
+          mean_value <- (base::length(var)/base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])))/base::length(var)
+          ggplot2::ggplot(data = data_cut, mapping = aes(x = !!factor_var, y = percentage, fill = !!factor_var, label = base::paste(100 * base::round(percentage, 4), "%", sep = ""))) +
             ggplot2::geom_hline(yintercept = mean_value, lty = 2, lwd = 0.5, col = "black") +
             ggplot2::geom_bar(stat = "identity", position = "identity", color = "black") +
-            ggplot2::labs(x = factor_axis,
-                          y = percentage_axis,
-                          title = title_2) +
+            ggplot2::labs(x = factor_axis, y = percentage_axis, title = title_2) +
             ggplot2::geom_label(color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
@@ -137,32 +130,28 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            panel.grid.minor.y = element_line(linetype = "blank"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") +
-            ggplot2::scale_y_continuous(limits = c(0, 1.1 * max(data_cut$percentage)),
-                                        labels = c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"),
-                                        breaks = c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)) +
-            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot2
-          
+            ggplot2::scale_y_continuous(limits = c(0, 1.1 * base::max(data_cut$percentage)), labels = c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"), breaks = c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)) +
+            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot2
+################################################################################
           # PLOT 3:  
-          grid_size = 50
-          data %>% select(!!factor_var) -> var
-          df <- expand.grid(y = 1:grid_size, x = 1:grid_size)
-          categ_table <- round(table(var) * ((grid_size*grid_size)/nrow(var)))
-          if(sum(categ_table) == grid_size * grid_size){
+          data %>% dplyr::select(!!factor_var) -> var
+          df <- base::expand.grid(y = 1:grid_size, x = 1:grid_size)
+          categ_table <- base::round(table(var) * ((grid_size * grid_size)/base::nrow(var)))
+          if(base::sum(categ_table) == grid_size * grid_size){
             categ_table <- categ_table
-          } else if (sum(categ_table) > grid_size * grid_size){
-            los = factor(rep(names(categ_table), categ_table))
-            los = sample(los, grid_size * grid_size, replace = FALSE)
-            categ_table <- table(los)
+          } else if (base::sum(categ_table) > grid_size * grid_size){
+            los = base::factor(base::rep(base::names(categ_table), categ_table))
+            los = base::sample(los, grid_size * grid_size, replace = FALSE)
+            categ_table <- base::table(los)
           } else {
-            los =  grid_size * grid_size - sum(categ_table)
-            categ_table[which.max(categ_table)] <- categ_table[which.max(categ_table)] + los
+            los =  grid_size * grid_size - base::sum(categ_table)
+            categ_table[base::which.max(categ_table)] <- categ_table[base::which.max(categ_table)] + los
           }
-          df$var <- factor(rep(names(categ_table), categ_table), levels = levels(data[[which(names(data) == factor_var_name)]]), ordered = TRUE)
-          
+          df$var <- base::factor(base::rep(base::names(categ_table), categ_table), levels = base::levels(data[[base::which(base::names(data) == factor_var_name)]]), ordered = TRUE)
           ggplot2::ggplot(df, aes(x = x, y = y, fill = var)) +
             ggplot2::geom_tile(color = "black") +
             ggplot2::scale_x_continuous(expand = c(0, 0)) +
-            ggplot2::scale_y_continuous(expand = c(0, 0), trans = "reverse") + #, trans = "reverse"
+            ggplot2::scale_y_continuous(expand = c(0, 0), trans = "reverse") + 
             ggplot2::labs(title = title_3) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.title.x = element_blank(),
@@ -181,28 +170,25 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            legend.box.spacing = unit(0.25, "cm"),
                            legend.text = element_text(size = text_size, color = "black", face = "plain"),
                            legend.title = element_text(size = text_size, color = "black", face = "bold")) +
-            ggplot2::guides(fill = guide_legend(paste(factor_axis, ":", sep = ""), ncol = 1)) +
-            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot3
-          
-          # PLOT 4
+            ggplot2::guides(fill = guide_legend(base::paste(factor_axis, ":", sep = ""), ncol = 1)) +
+            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot3
+################################################################################       
+          # PLOT 4:
           circle_data <- data %>%
-            select(!!factor_var) %>%
-            arrange(desc(!!factor_var)) %>%
-            group_by(!!factor_var) %>%
-            count() %>%
-            ungroup() %>%
-            mutate(prop = 100 * n/sum(n, na.rm = TRUE)); as.data.frame(circle_data) -> circle_data
-          packing <- circleProgressiveLayout(circle_data$n, sizetype='area')
-          data_packing = cbind(circle_data, packing)
-          ggplot_circle_data <- circleLayoutVertices(packing, npoints = 10000)
-          
+            dplyr::select(!!factor_var) %>%
+            dplyr::arrange(desc(!!factor_var)) %>%
+            dplyr::group_by(!!factor_var) %>%
+            dplyr::count() %>%
+            dplyr::ungroup() %>%
+            dplyr::mutate(prop = 100 * n/base::sum(n, na.rm = TRUE)); base::as.data.frame(circle_data) -> circle_data
+          packing <- packcircles::circleProgressiveLayout(circle_data$n, sizetype='area')
+          data_packing = base::cbind(circle_data, packing)
+          ggplot_circle_data <- packcircles::circleLayoutVertices(packing, npoints = 10000)
           ggplot2::ggplot() + 
             ggplot2::geom_polygon(data = ggplot_circle_data, aes(x, y, group = id, fill = as.factor(id)), colour = "black") +
-            ggplot2::geom_label(data = data_packing, aes(x = x, y = y, label = !!factor_var),
-                                color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
+            ggplot2::geom_label(data = data_packing, aes(x = x, y = y, label = !!factor_var), color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
             ggplot2::scale_size_continuous(range = c(1,4)) +
-            # ggplot2::scale_fill_manual(values = scales::hue_pal()(length(unique(data[[which(names(data) == factor_var_name)]])))) +
-            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) +
+            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) +
             ggplot2::labs(title = title_4) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.title.x = element_blank(),
@@ -220,13 +206,12 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") -> plot4
-          
+################################################################################      
           # PLOT 5:  
-          data %>% select(!!numeric_var) -> var; var <- c(var); var <- unlist(var); mean_value <- mean(var, na.rm = TRUE)
-          data %>% select(!!numeric_var) -> var; var <- c(var); var <- unlist(var); median_value <- median(var, na.rm = TRUE)
-          data %>% select(!!numeric_var) -> var; var <- c(var); var <- unlist(var); Q1_value <- quantile(var, 0.25, na.rm = TRUE)
-          data %>% select(!!numeric_var) -> var; var <- c(var); var <- unlist(var); Q3_value <- quantile(var, 0.75, na.rm = TRUE)
-          
+          data %>% dplyr::select(!!numeric_var) -> var; var <- c(var); var <- base::unlist(var); mean_value <- base::mean(var, na.rm = TRUE)
+          data %>% dplyr::select(!!numeric_var) -> var; var <- c(var); var <- base::unlist(var); median_value <- stats::median(var, na.rm = TRUE)
+          data %>% dplyr::select(!!numeric_var) -> var; var <- c(var); var <- base::unlist(var); Q1_value <- stats::quantile(var, 0.25, na.rm = TRUE)
+          data %>% dplyr::select(!!numeric_var) -> var; var <- c(var); var <- base::unlist(var); Q3_value <- stats::quantile(var, 0.75, na.rm = TRUE)
           ggplot2::ggplot(data = data, aes(x = !!factor_var, y = !!numeric_var, fill = !!factor_var)) +
             ggplot2::geom_hline(yintercept = mean_value, lty = 1, lwd = 0.5, color = "black") +
             ggplot2::geom_hline(yintercept = median_value, lty = 2, lwd = 0.5, color = "black") +    
@@ -235,9 +220,7 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
             ggplot2::geom_boxplot(color = "black", outlier.color = "black", notch = FALSE) + 
             ggplot2::stat_summary(fun.y = mean, color = "black", geom = "point", shape = 19, size = 2.5, show.legend = FALSE) +
             ggplot2::stat_summary(fun.y = mean, color = "white", geom = "point", shape = 19, size = 1, show.legend = FALSE) +
-            ggplot2::labs(x = factor_axis,
-                          y = numeric_axis,
-                          title = title_5) +
+            ggplot2::labs(x = factor_axis, y = numeric_axis, title = title_5) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -254,14 +237,13 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            panel.grid.minor.y = element_line(linetype = "blank"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") +
-            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot5
-          
+            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot5
+################################################################################ 
           # PLOT 6:  
-          data %>% select(!!numeric_var) -> var; var <- c(var); var <- unlist(var); mean_value <- mean(var, na.rm = TRUE)
-          data %>% select(!!numeric_var) -> var; var <- c(var); var <- unlist(var); median_value <- median(var, na.rm = TRUE)
-          data %>% select(!!numeric_var) -> var; var <- c(var); var <- unlist(var); Q1_value <- quantile(var, 0.25, na.rm = TRUE)
-          data %>% select(!!numeric_var) -> var; var <- c(var); var <- unlist(var); Q3_value <- quantile(var, 0.75, na.rm = TRUE)
-          
+          data %>% dplyr::select(!!numeric_var) -> var; var <- c(var); var <- base::unlist(var); mean_value <- base::mean(var, na.rm = TRUE)
+          data %>% dplyr::select(!!numeric_var) -> var; var <- c(var); var <- base::unlist(var); median_value <- stats::median(var, na.rm = TRUE)
+          data %>% dplyr::select(!!numeric_var) -> var; var <- c(var); var <- base::unlist(var); Q1_value <- stats::quantile(var, 0.25, na.rm = TRUE)
+          data %>% dplyr::select(!!numeric_var) -> var; var <- c(var); var <- base::unlist(var); Q3_value <- stats::quantile(var, 0.75, na.rm = TRUE)
           ggplot2::ggplot(data = data, aes(x = !!factor_var, y = !!numeric_var, fill = !!factor_var)) +
             ggplot2::geom_hline(yintercept = mean_value, lty = 1, lwd = 0.5, color = "black") +
             ggplot2::geom_hline(yintercept = median_value, lty = 2, lwd = 0.5, color = "black") +    
@@ -270,9 +252,7 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
             ggplot2::geom_violin(draw_quantiles = c(0.25, 0.50, 0.75), lwd = 0.5, scale = "width", color = "black", trim = FALSE) +
             ggplot2::stat_summary(fun.y = mean, color = "black", geom = "point", shape = 19, size = 2.5, show.legend = FALSE) +
             ggplot2::stat_summary(fun.y = mean, color = "white", geom = "point", shape = 19, size = 1, show.legend = FALSE) +
-            ggplot2::labs(x = factor_axis,
-                          y = numeric_axis,
-                          title = title_6) +
+            ggplot2::labs(x = factor_axis, y = numeric_axis, title = title_6) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -289,15 +269,12 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            panel.grid.minor.y = element_line(linetype = "blank"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") +
-            # ggplot2::scale_fill_manual(values = scales::hue_pal()(length(unique(data[[which(names(data) == factor_var_name)]])))) 
-            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot6
-          
+            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot6
+################################################################################ 
           # PLOT 7:
           ggplot2::ggplot(data, aes(x = !!numeric_var, y = !!factor_var, fill = !!factor_var)) +
             ggridges::geom_density_ridges2(scale = 0.95, quantile_lines = TRUE, rel_min_height = 0.001) + 
-            ggplot2::labs(x = numeric_axis,
-                          y = factor_axis,
-                          title = title_7) +
+            ggplot2::labs(x = numeric_axis, y = factor_axis, title = title_7) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -315,16 +292,13 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") +
             ggplot2::guides(fill = guide_legend(paste(factor_axis, ":", sep = ""), nrow = 1)) +
-            # ggplot2::scale_fill_hue(scales::hue_pal()(length(unique(data[[which(names(data) == factor_var_name)]])))) +
-            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) +
+            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) +
             ggplot2::scale_y_discrete(expand = expand_scale(mult = 0.05)) -> plot7
-          
+################################################################################
           # PLOT 8:
           ggplot2::ggplot(data = data, aes(x = !!numeric_var)) +
-            ggplot2::geom_density(aes(fill = !!factor_var), position= "stack") +
-            ggplot2::labs(x = numeric_axis,
-                          y = percentage_axis,
-                          title = title_8) +
+            ggplot2::geom_density(aes(fill = !!factor_var), position = "stack") +
+            ggplot2::labs(x = numeric_axis, y = percentage_axis, title = title_8) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -347,40 +321,33 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            legend.text = element_text(size = text_size, color = "black", face = "plain"),
                            legend.title = element_text(size = text_size, color = "black", face = "bold"),
                            legend.key = element_rect(color = "gray90")) +
-            ggplot2::guides(fill = guide_legend(paste(factor_axis, ":", sep = ""), ncol = 1)) +
-            # ggplot2::scale_fill_hue(scales::hue_pal()(length(unique(data[[which(names(data) == factor_var_name)]])))) 
-            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot8
-          
+            ggplot2::guides(fill = guide_legend(base::paste(factor_axis, ":", sep = ""), ncol = 1)) +
+            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot8
+################################################################################   
           # PLOT 9:
           data %>%
-            mutate(mean_value = mean(!!numeric_var, na.rm = TRUE)) %>%
+            dplyr::mutate(mean_value = base::mean(!!numeric_var, na.rm = TRUE)) %>%
             group_by(!!factor_var) %>%
-            mutate(mean_group = mean(!!numeric_var, na.rm = TRUE)) %>%
-            select(!!factor_var, mean_value, mean_group) %>%
-            distinct() %>%
-            mutate(type = ifelse(mean_group < mean_value, "Mean below average", "Mean above average")) %>%
-            arrange(mean_group) %>%
-            mutate(mean_group = mean_group - mean_value) %>%
-            ungroup() -> data_chart
-          
-          ggplot(data = data_chart, aes(x = !!factor_var, y = mean_group, label = round(mean_group, 2))) +
+            dplyr::mutate(mean_group = base::mean(!!numeric_var, na.rm = TRUE)) %>%
+            dplyr::select(!!factor_var, mean_value, mean_group) %>%
+            dplyr::distinct() %>%
+            dplyr::mutate(type = base::ifelse(mean_group < mean_value, "Mean below average", "Mean above average")) %>%
+            dplyr::arrange(mean_group) %>%
+            dplyr::mutate(mean_group = mean_group - mean_value) %>%
+            dplyr::ungroup() -> data_chart
+          ggplot(data = data_chart, aes(x = !!factor_var, y = mean_group, label = base::round(mean_group, 2))) +
             ggplot2::geom_hline(yintercept = 0, lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 1 * sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 1 * -sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 2 * sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 2 * -sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 3 * sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 3 * -sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 1 * stats::sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 1 * -stats::sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 2 * stats::sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 2 * -stats::sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 3 * stats::sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 3 * -stats::sd(data_chart$mean_group), lty = 2, lwd = 0.5, col = "black") +
             ggplot2::geom_bar(aes(fill = type), stat = 'identity', color = "black") +
-            ggplot2::scale_fill_manual(name = "GROUP:",
-                                       labels = c("MEAN ABOVE AVERAGE", "MEAN BELOW AVERAGE"),
-                                       values = c("Mean above average" = "grey30",
-                                                  "Mean below average" = "grey50")) +
-            ggplot2::labs(x = factor_axis,
-                          y = "DIFFERENCE",
-                          title = title_9) +
-            ggplot2::geom_label(color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
-            ggplot2::coord_flip(ylim = 1.25 * c(-max(abs(data_chart$mean_group)), max(abs(data_chart$mean_group)))) +
+            ggplot2::scale_fill_manual(name = "GROUP:", labels = c("MEAN ABOVE AVERAGE", "MEAN BELOW AVERAGE"), values = c("Mean above average" = "grey30", "Mean below average" = "grey50")) +
+            ggplot2::labs(x = factor_axis, y = "DIFFERENCE", title = title_9) +
+            ggplot2::geom_label(color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white", label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
+            ggplot2::coord_flip(ylim = 1.25 * c(-base::max(base::abs(data_chart$mean_group)), base::max(base::abs(data_chart$mean_group)))) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -403,38 +370,32 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            legend.text = element_text(size = text_size, color = "black", face = "plain"),
                            legend.title = element_text(size = text_size, color = "black", face = "bold")) +
             ggplot2::guides(ncol = 1) -> plot9
-          
+################################################################################
           # PLOT 10:
           data %>%
-            mutate(median_value = median(!!numeric_var, na.rm = TRUE)) %>%
-            group_by(!!factor_var) %>%
-            mutate(median_group = median(!!numeric_var, na.rm = TRUE)) %>%
-            ungroup() %>%          
-            select(!!factor_var, median_value, median_group) %>%
-            distinct() %>%
-            mutate(type = ifelse(median_group < median_value, "Median below average", "Median above average")) %>%
-            arrange(median_group) %>%
-            mutate(median_group = median_group - median_value) %>%
-            ungroup() -> data_chart
-          
-          ggplot(data = data_chart, aes(x = !!factor_var, y = median_group, label = round(median_group, 2))) +
+            dplyr::mutate(median_value = stats::median(!!numeric_var, na.rm = TRUE)) %>%
+            dplyr::group_by(!!factor_var) %>%
+            dplyr::mutate(median_group = stats::median(!!numeric_var, na.rm = TRUE)) %>%
+            dplyr::ungroup() %>%          
+            dplyr::select(!!factor_var, median_value, median_group) %>%
+            dplyr::distinct() %>%
+            dplyr::mutate(type = base::ifelse(median_group < median_value, "Median below average", "Median above average")) %>%
+            dplyr::arrange(median_group) %>%
+            dplyr::mutate(median_group = median_group - median_value) %>%
+            dplyr::ungroup() -> data_chart
+          ggplot(data = data_chart, aes(x = !!factor_var, y = median_group, label = base::round(median_group, 2))) +
             ggplot2::geom_hline(yintercept = 0, lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 1 * sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 1 * -sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 2 * sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 2 * -sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 3 * sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
-            ggplot2::geom_hline(yintercept = 3 * -sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 1 * stats::sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 1 * -stats::sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 2 * stats::sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 2 * -stats::sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 3 * stats::sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
+            ggplot2::geom_hline(yintercept = 3 * -stats::sd(data_chart$median_group), lty = 2, lwd = 0.5, col = "black") +
             ggplot2::geom_bar(aes(fill = type), stat = 'identity', color = "black") +
-            ggplot2::scale_fill_manual(name = "GROUP:",
-                                       labels = c("MEDIAN ABOVE AVERAGE", "MEDIAN BELOW AVERAGE"),
-                                       values = c("Median above average" = "grey30",
-                                                  "Median below average" = "grey50")) +
-            ggplot2::labs(x = factor_axis,
-                          y = "DIFFERENCE",
-                          title = title_10) +
-            ggplot2::geom_label(color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
-            ggplot2::coord_flip(ylim = 1.25 * c(-max(abs(data_chart$median_group)), max(abs(data_chart$median_group)))) +
+            ggplot2::scale_fill_manual(name = "GROUP:", labels = c("MEDIAN ABOVE AVERAGE", "MEDIAN BELOW AVERAGE"), values = c("Median above average" = "grey30", "Median below average" = "grey50")) +
+            ggplot2::labs(x = factor_axis, y = "DIFFERENCE", title = title_10) +
+            ggplot2::geom_label(color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white", label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
+            ggplot2::coord_flip(ylim = 1.25 * c(-base::max(base::abs(data_chart$median_group)), base::max(base::abs(data_chart$median_group)))) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -457,15 +418,12 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            legend.text = element_text(size = text_size, color = "black", face = "plain"),
                            legend.title = element_text(size = text_size, color = "black", face = "bold")) +
             ggplot2::guides(ncol = 1) -> plot10
-          
+################################################################################
           # PLOT 11:
-          data %>% mutate(cuts = cut_number(!!numeric_var, n = numeric_cuts)) -> data
-          
+          data %>% dplyr::mutate(cuts = ggplot2::cut_interval(!!numeric_var, n = numeric_cuts)) -> data
           ggplot2::ggplot(data = data, aes(x = cuts, fill = !!factor_var)) +
             ggplot2::geom_bar(position = "fill", color = "black") +  
-            ggplot2::labs(x = numeric_axis,
-                          y = percentage_axis,
-                          title = title_11) +
+            ggplot2::labs(x = numeric_axis, y = percentage_axis, title = title_11) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -488,19 +446,15 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            legend.text = element_text(size = text_size, color = "black", face = "plain"),
                            legend.title = element_text(size = text_size, color = "black", face = "bold"),
                            legend.key = element_rect(color = "gray90")) +
-            ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1),
-                                        breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) +
-            ggplot2::guides(fill = guide_legend(paste(factor_axis, ":", sep = ""), ncol = 1)) +
-            # ggplot2::scale_fill_hue(scales::hue_pal()(length(unique(data[[which(names(data) == factor_var_name)]])))) +
-            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) +
-            coord_flip() -> plot11
-          
+            ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1), breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) +
+            ggplot2::guides(fill = guide_legend(base::paste(factor_axis, ":", sep = ""), ncol = 1)) +
+            ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) +
+            ggplot2::coord_flip() -> plot11
+################################################################################
           # PLOT 12:
           ggplot2::ggplot(data = data, aes(x = !!numeric_var, color = !!factor_var)) +
-            ggplot2::stat_ecdf(lwd = 1) +
-            ggplot2::labs(x = numeric_axis,
-                          y = percentage_axis,
-                          title = title_12) +
+            ggplot2::stat_ecdf(lwd = 0.5) +
+            ggplot2::labs(x = numeric_axis, y = percentage_axis, title = title_12) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -523,12 +477,10 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            legend.text = element_text(size = text_size, color = "black", face = "plain"),
                            legend.title = element_text(size = text_size, color = "black", face = "bold"),
                            legend.key = element_rect(color = "black", fill = "gray90")) +
-            ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1),
-                                        breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) +
-            ggplot2::guides(color = guide_legend(paste(factor_axis, ":", sep = ""), ncol = 1)) +
-            # ggplot2::scale_color_hue(scales::hue_pal()(length(unique(data[[which(names(data) == factor_var_name)]])))) 
-            ggplot2::scale_color_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot12
-          
+            ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1), breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) +
+            ggplot2::guides(color = guide_legend(base::paste(factor_axis, ":", sep = ""), ncol = 1)) +
+            ggplot2::scale_color_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_name)]])) + 1, "Greys")[-1]) -> plot12
+################################################################################         
           # PLOT 13:  
           ggplot2::ggplot(data = data) +
             ggplot2::geom_boxplot(aes(x = 1, y = !!numeric_var), fill = "gray60", color = "black", outlier.color = "black", notch = FALSE) + 
@@ -537,9 +489,7 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
             ggplot2::stat_summary(aes(x = 1, y = !!numeric_var), fun.y = mean, color = "white", geom = "point", shape = 19, size = 1, show.legend = FALSE) +
             ggplot2::stat_summary(aes(x = 3, y = !!numeric_var), fun.y = mean, color = "black", geom = "point", shape = 19, size = 2.5, show.legend = FALSE) +
             ggplot2::stat_summary(aes(x = 3, y = !!numeric_var), fun.y = mean, color = "white", geom = "point", shape = 19, size = 1, show.legend = FALSE) +
-            ggplot2::labs(x = factor_axis,
-                          y = numeric_axis,
-                          title = title_13) +
+            ggplot2::labs(x = factor_axis, y = numeric_axis, title = title_13) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_blank(),
@@ -558,14 +508,11 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") +
             ggplot2::scale_x_continuous(limits = c(0, 4)) -> plot13
-          
+################################################################################          
           # PLOT 14:
           ggplot2::ggplot(data = data, aes(x = !!numeric_var)) +
             ggplot2::geom_histogram(color = "black", bins = histogram_bins, fill = "gray60") +  
-            ggplot2::geom_freqpoly(bins = histogram_bins, lwd = 1, color = "black") +
-            ggplot2::labs(x = numeric_axis,
-                          y = count_axis,
-                          title = title_14) +
+            ggplot2::labs(x = numeric_axis, y = count_axis, title = title_14) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -582,14 +529,12 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            panel.grid.minor.y = element_line(linetype = "blank"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") -> plot14
-          
+################################################################################          
           # PLOT 15:
           ggplot2::ggplot(data = data, aes(sample = !!numeric_var)) +
-            ggplot2::stat_qq() +
-            ggplot2::stat_qq_line(lwd = 1, color = "black") +
-            ggplot2::labs(x = "THEORETICAL",
-                          y = "SAMPLE",
-                          title = title_15) +
+            ggplot2::stat_qq(size = 0.5) +
+            ggplot2::stat_qq_line(lwd = 0.5, color = "black") +
+            ggplot2::labs(x = "THEORETICAL",  y = "SAMPLE", title = title_15) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -606,15 +551,12 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            panel.grid.minor.y = element_line(linetype = "blank"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") -> plot15
-          
+################################################################################          
           # PLOT 16:
           ggplot2::ggplot(data = data, aes(x = !!numeric_var)) +
             ggplot2::stat_density(fill = "gray60", color = "black", lwd = 0.5) +
             ggplot2::stat_ecdf(lwd = 1, color = "black") +
-            ggplot2::labs(x = numeric_axis,
-                          y = percentage_axis,
-                          title = title_16,
-                          caption = caption) +
+            ggplot2::labs(x = numeric_axis, y = percentage_axis, title = title_16, caption = caption) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -631,39 +573,35 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") +
-            ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1),
-                                        breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) -> plot16
-          
-          dev.new()
-          plots <- gridExtra::grid.arrange(arrangeGrob(plot1, plot2, plot3, plot4,
-                                                       plot5, plot6, plot7, plot8,
-                                                       plot9, plot10, plot11, plot12,
-                                                       plot13, plot14, plot15, plot16, layout_matrix = plot_grid))
-          
-          
+            ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1), breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) -> plot16
+################################################################################          
+          grDevices::dev.new()
+          plots <- gridExtra::grid.arrange(gridExtra::arrangeGrob(plot1, plot2, plot3, plot4,
+                                                                  plot5, plot6, plot7, plot8,
+                                                                  plot9, plot10, plot11, plot12,
+                                                                  plot13, plot14, plot15, plot16, layout_matrix = plot_grid))
           if (plots_save == TRUE){
-            if (is.null(save_filename)){
-              ggsave(filename = paste0(paste(Sys.Date(), factor_var_name, numeric_var_name), ".png"),
-                     plot = plots, width = save_width, height = save_height, units = c("cm"), dpi = save_dpi)
-              plot_name <- paste0(paste(Sys.Date(), factor_var_name, numeric_var_name), ".png")
-              print(paste(getwd(), plot_name, sep = "/"))
+            if (base::is.null(save_filename)){
+              ggplot2::ggsave(filename = base::paste0(base::paste(base::Sys.Date(), factor_var_name, numeric_var_name), ".png"), plot = plots, width = save_width, height = save_height, units = c("cm"), dpi = save_dpi)
+              plot_name <- base::paste0(base::paste(base::Sys.Date(), factor_var_name, numeric_var_name), ".png")
+              base::print(base::paste(base::getwd(), plot_name, sep = "/"))
             } else {
-              ggsave(filename = paste0(save_filename, ".png"),
-                     plot = plots, width = save_width, height = save_height, units = c("cm"), dpi = save_dpi)
-              plot_name <- paste0(save_filename, ".png")
-              print(paste(getwd(), plot_name, sep = "/"))
+              ggplot2::ggsave(filename = paste0(save_filename, ".png"), plot = plots, width = save_width, height = save_height, units = c("cm"), dpi = save_dpi)
+              plot_name <- base::paste0(save_filename, ".png")
+              base::print(base::paste(base::getwd(), plot_name, sep = "/"))
             }
           }
+################################################################################
       } else {
-        print("ERROR: Type of provided numeric_var is not appropariate (require numeric or integer)")}
+        base::print("ERROR: Type of provided numeric_var is not appropariate (require numeric or integer)")}
     } else {
-      print("ERROR: Type of provided factor_var is not appropariate (require factor)")}
+      base::print("ERROR: Type of provided factor_var is not appropariate (require factor)")}
   } else {
-    print("ERROR: Type of provided data is not appropariate (require tibble or dataframe)")}
+    base::print("ERROR: Type of provided data is not appropariate (require tibble or dataframe)")}
 }
 
 plots_factor_numeric(data = diamonds,
                      factor_var = cut, factor_axis = "CUT",
                      numeric_var = carat, numeric_axis = "CARAT",
-                     caption = "Diamonds (ggplot2 dataset)", numeric_cuts = 5)
+                     caption = "Diamonds (ggplot2 dataset)", numeric_cuts = 10, grid_size = 10)
 
