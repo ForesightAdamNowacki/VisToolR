@@ -1,9 +1,8 @@
-
 # Deep visual analysis factor vs factor:
 plots_factor_factor <- function(data, factor_var_1, factor_var_2,
                                 
                                 # Sample data from original datatset to make faster function compilation:
-                                data_size = 0.5, seed_value = 42,
+                                data_size = 1.0, seed_value = 42,
                                 
                                 # Axis, labels:
                                 factor_axis_1 = NULL, factor_axis_2 = NULL,  
@@ -69,7 +68,7 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
         base::print("INFO: Type of provided factor_var_2 is appropariate")
         if (base::is.null(factor_axis_1)){factor_axis_1 <- "FACTOR VARIABLE 1"} else {factor_axis_1 <- stringr::str_to_upper(factor_axis_1)}
         if (base::is.null(factor_axis_2)){factor_axis_2 <- "FACTOR VARIABLE 2"} else {factor_axis_2 <- stringr::str_to_upper(factor_axis_2)}
-        if (base::is.null(caption)){caption <- "SOURCE: unknown data source"} else {caption <- stringr::str_to_upper(paste("SOURCE:", caption))}
+        if (base::is.null(caption)){caption <- "SOURCE: unknown data source"} else {caption <- stringr::str_to_upper(base::paste("SOURCE:", caption))}
         
         # Convert data to tibble:
         data <- dplyr::as_tibble(data)
@@ -176,7 +175,7 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
             ggplot2::guides(fill = guide_legend(paste(factor_axis_1, ":", sep = ""), ncol = 1)) +
             ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_1_name)]])) + 1, "Greys")[-1]) -> plot3
 ################################################################################          
-          # PLOT 4
+          # PLOT 4:
           circle_data <- data %>%
             dplyr::select(!!factor_var_1) %>%
             dplyr::arrange(dplyr::desc(!!factor_var_1)) %>%
