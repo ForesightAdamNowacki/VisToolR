@@ -33,7 +33,7 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
                                   plots_save = FALSE, save_filename = NULL, save_width = 40, save_height = 40, save_dpi = 500,
                                   
                                   # Plot matrix:
-                                  plot_grid = matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16), byrow = TRUE, ncol = 4)
+                                  plot_grid = base::matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16), byrow = TRUE, ncol = 4)
 ){
   # Packages:
   if (!require(ggplot2)){utils::install.packages('ggplot2'); require('ggplot2')}
@@ -504,8 +504,7 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
                            panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") +
-            ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1),
-                                        breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) -> plot16
+            ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1), breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) -> plot16
 ################################################################################          
           grDevices::dev.new()
           plots <- gridExtra::grid.arrange(gridExtra::arrangeGrob(plot1, plot2, plot3, plot4,
