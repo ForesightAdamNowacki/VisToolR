@@ -32,7 +32,7 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
                                 plots_save = FALSE, save_filename = NULL, save_width = 40, save_height = 40, save_dpi = 500,
                                 
                                 # Grid display parameters:
-                                plot_grid = matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 8, 12, 13, 14, 15), byrow = TRUE, ncol = 4)
+                                plot_grid = base::matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 8, 12, 13, 14, 15), byrow = TRUE, ncol = 4)
 ){
   # Packages:
   if (!require(ggplot2)){utils::install.packages('ggplot2'); require('ggplot2')}
