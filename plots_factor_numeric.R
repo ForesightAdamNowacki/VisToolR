@@ -575,7 +575,7 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
                            legend.position = "none") +
             ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1), breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) -> plot16
 ################################################################################          
-          grDevices::dev.new()
+          # grDevices::dev.new()
           plots <- gridExtra::grid.arrange(gridExtra::arrangeGrob(plot1, plot2, plot3, plot4,
                                                                   plot5, plot6, plot7, plot8,
                                                                   plot9, plot10, plot11, plot12,
@@ -600,8 +600,8 @@ plots_factor_numeric <- function(data, factor_var, numeric_var,
     base::print("ERROR: Type of provided data is not appropariate (require tibble or dataframe)")}
 }
 
-plots_factor_numeric(data = diamonds,
-                     factor_var = cut, factor_axis = "CUT",
-                     numeric_var = carat, numeric_axis = "CARAT",
-                     caption = "Diamonds (ggplot2 dataset)", numeric_cuts = 10, grid_size = 10)
+# plots_factor_numeric(data = diamonds,
+#                      factor_var = cut, factor_axis = "CUT",
+#                      numeric_var = carat, numeric_axis = "CARAT",
+#                      caption = "Diamonds (ggplot2 dataset)", numeric_cuts = 10, grid_size = 10)
 

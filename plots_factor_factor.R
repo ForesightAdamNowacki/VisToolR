@@ -26,7 +26,7 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
                                 title_15 = "CIRCLE PACKING PLOT",
                                 
                                 # Additional parameters:
-                                text_size = 7, title_size = 9,
+                                text_size = 7, title_size = 9, grid_size = 50,
                                 
                                 # Plot save parameters:
                                 plots_save = FALSE, save_filename = NULL, save_width = 40, save_height = 40, save_dpi = 500,
@@ -135,7 +135,6 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
             ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_1_name)]])) + 1, "Greys")[-1]) -> plot2
 ################################################################################
           # PLOT 3:
-          grid_size = 50
           data %>% dplyr::select(!!factor_var_1) -> var
           df <- base::expand.grid(y = 1:grid_size, x = 1:grid_size)
           categ_table <- base::round(table(var) * ((grid_size*grid_size)/base::nrow(var)))
@@ -454,7 +453,7 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
           ggplot2::ggplot(data = data_cut, mapping = aes(x = !!factor_var_2, y = count, label = count, fill = !!factor_var_2)) +
             ggplot2::geom_hline(yintercept = mean_value, lty = 2, lwd = 0.5, col = "black") +
             ggplot2::geom_bar(stat = "identity", position = "identity", color = "black") +
-            ggplot2::labs(x = factor_axis_1, y = count_axis, title = title_12) +
+            ggplot2::labs(x = factor_axis_2, y = count_axis, title = title_12) +
             ggplot2::geom_label(color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
@@ -481,7 +480,7 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
           ggplot2::ggplot(data = data_cut, mapping = aes(x = !!factor_var_2, y = percentage, fill = !!factor_var_2, label = paste(100 * round(percentage, 4), "%", sep = ""))) +
             ggplot2::geom_hline(yintercept = mean_value, lty = 2, lwd = 0.5, col = "black") +
             ggplot2::geom_bar(stat = "identity", position = "identity", color = "black") +
-            ggplot2::labs(x = factor_axis_1, y = percentage_axis, title = title_13) +
+            ggplot2::labs(x = factor_axis_2, y = percentage_axis, title = title_13) +
             ggplot2::geom_label(color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
@@ -503,7 +502,6 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
             ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_2_name)]])) + 1, "Greys")[-1]) -> plot13
 ################################################################################         
           # PLOT 14:
-          grid_size = 50
           data %>% select(!!factor_var_2) -> var
           df <- base::expand.grid(y = 1:grid_size, x = 1:grid_size)
           categ_table <- base::round(base::table(var) * ((grid_size*grid_size)/base::nrow(var)))
@@ -576,7 +574,7 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
                            plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                            legend.position = "none") -> plot15
 ################################################################################             
-          grDevices::dev.new()
+          # grDevices::dev.new()
           plots <- gridExtra::grid.arrange(gridExtra::arrangeGrob(plot1, plot2, plot3, plot4,
                                                                   plot5, plot6, plot7, plot8,
                                                                   plot9, plot10, plot11, plot12,
@@ -601,9 +599,9 @@ plots_factor_factor <- function(data, factor_var_1, factor_var_2,
     base::print("ERROR: Type of provided data is not appropariate (require tibble or dataframe)")}
 }
 
-plots_factor_factor(data = diamonds,
-                    data_size = 1.00, 
-                    factor_var_1 = cut, factor_axis_1 = "CUT",
-                    factor_var_2 = clarity, factor_axis_2 = "CLARITY",
-                    caption = "Diamonds (ggplot2 dataset)")
+# plots_factor_factor(data = diamonds,
+#                     data_size = 1.00, 
+#                     factor_var_1 = cut, factor_axis_1 = "CUT",
+#                     factor_var_2 = clarity, factor_axis_2 = "CLARITY",
+#                     caption = "Diamonds (ggplot2 dataset)")
 

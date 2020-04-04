@@ -27,7 +27,7 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
                                   title_16 = "DISTRIBUTION PLOT",
                                   
                                   # Additional parameters:
-                                  text_size = 7, title_size = 9, alpha = 0.25, histogram_bins_1 = 10, histogram_bins_2 = 10, hex_bins = 10, cuts_1 = 5, cuts_2 = 5,
+                                  text_size = 7, title_size = 9, alpha = 0.25, histogram_bins_1 = 10, histogram_bins_2 = 10, hex_bins = 10, cuts_1 = 5, cuts_2 = 5, digits_lab = 8,
                                   
                                   # Plot save parameters:
                                   plots_save = FALSE, save_filename = NULL, save_width = 40, save_height = 40, save_dpi = 500,
@@ -274,7 +274,7 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
 ################################################################################          
           # PLOT 9:
           data %>%
-            dplyr::mutate(cuts_1 = ggplot2::cut_interval(!!numeric_var_1, n = cuts_1), cuts_2 = ggplot2::cut_interval(!!numeric_var_2, n = cuts_2)) %>%
+            dplyr::mutate(cuts_1 = ggplot2::cut_interval(!!numeric_var_1, n = cuts_1, dig.lab = digits_lab), cuts_2 = ggplot2::cut_interval(!!numeric_var_2, n = cuts_2, dig.lab = digits_lab)) %>%
             dplyr::group_by(cuts_1, cuts_2) %>%
             dplyr::summarise(count = dplyr::n()) %>%
             dplyr::ungroup() %>%
@@ -283,6 +283,8 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
             ggplot2::geom_tile(colour = "black") +
             ggplot2::geom_label(color = "black", size = 3, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
             ggplot2::labs(x = numeric_axis_1, y = numeric_axis_2, title = title_9) +
+
+            
             ggplot2::theme(plot.title = element_text(size = text_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
@@ -309,7 +311,7 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
 ################################################################################          
           # PLOT 10:
           data %>%
-            dplyr::mutate(cuts_1 = ggplot2::cut_interval(!!numeric_var_1, n = cuts_1), cuts_2 = ggplot2::cut_interval(!!numeric_var_2, n = cuts_2)) %>%
+            dplyr::mutate(cuts_1 = ggplot2::cut_interval(!!numeric_var_1, n = cuts_1, dig.lab = digits_lab), cuts_2 = ggplot2::cut_interval(!!numeric_var_2, n = cuts_2, dig.lab = digits_lab)) %>%
             dplyr::group_by(cuts_1, cuts_2) %>%
             dplyr::summarise(percent = base::round(100 * dplyr::n()/base::nrow(data), 2)) %>%
             dplyr::ungroup() %>%
@@ -344,7 +346,7 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
 ################################################################################          
           # PLOT 11:
           data %>%
-            dplyr::mutate(cuts_1 = ggplot2::cut_number(!!numeric_var_1, n = cuts_1), cuts_2 = ggplot2::cut_number(!!numeric_var_2, n = cuts_2)) %>%
+            dplyr::mutate(cuts_1 = ggplot2::cut_number(!!numeric_var_1, n = cuts_1, dig.lab = digits_lab), cuts_2 = ggplot2::cut_number(!!numeric_var_2, n = cuts_2)) %>%
             dplyr::group_by(cuts_1, cuts_2) %>%
             dplyr::summarise(count = dplyr::n()) %>%
             dplyr::ungroup() %>%
@@ -379,7 +381,7 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
 ################################################################################  
           # PLOT 12:
           data %>%
-            dplyr::mutate(cuts_1 = ggplot2::cut_number(!!numeric_var_1, n = cuts_1), cuts_2 = ggplot2::cut_number(!!numeric_var_2, n = cuts_2)) %>%
+            dplyr::mutate(cuts_1 = ggplot2::cut_number(!!numeric_var_1, n = cuts_1, dig.lab = digits_lab), cuts_2 = ggplot2::cut_number(!!numeric_var_2, n = cuts_2)) %>%
             dplyr::group_by(cuts_1, cuts_2) %>%
             dplyr::summarise(percent = base::round(100 * dplyr::n()/base::nrow(data), 2)) %>%
             dplyr::ungroup() %>%
@@ -506,7 +508,7 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
                            legend.position = "none") +
             ggplot2::scale_y_continuous(labels = scales::percent, limits = c(0, 1), breaks = c(0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)) -> plot16
 ################################################################################          
-          grDevices::dev.new()
+          # grDevices::dev.new()
           plots <- gridExtra::grid.arrange(gridExtra::arrangeGrob(plot1, plot2, plot3, plot4,
                                                                   plot5, plot6, plot7, plot8,
                                                                   plot9, plot10, plot11, plot12,
@@ -531,8 +533,8 @@ plots_numeric_numeric <- function(data, numeric_var_1, numeric_var_2,
     base::print("ERROR: Type of provided data is not appropariate (require tibble or dataframe)")}
 }
 
-plots_numeric_numeric(data = diamonds,
-                      data_size = 0.1,
-                      cuts_1 = 4, cuts_2 = 5,
-                      numeric_var_1 = price, numeric_var_2 = carat,
-                      numeric_axis_1 = "price", numeric_axis_2 = "carat")
+# plots_numeric_numeric(data = diamonds,
+#                       data_size = 0.1,
+#                       cuts_1 = 4, cuts_2 = 5,
+#                       numeric_var_1 = price, numeric_var_2 = carat,
+#                       numeric_axis_1 = "price", numeric_axis_2 = "carat")
