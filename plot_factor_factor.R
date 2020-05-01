@@ -1,11 +1,11 @@
 # ------------------------------------------------------------------------------
 # FACTOR VS FACTOR EXPLORATORY DATA ANALYSIS
 # ------------------------------------------------------------------------------
-plot_factor_factor <- function(data, # data frame or tibble (obligatory parameter) - e.g diamonds
+plot_factor_factor <- function(data, # data frame or tibble (obligatory parameter)
                                factor_var_1, # 1st factor variable (obligatory parameter)
                                factor_var_2, # 2nd factor variable (obligatory parameter)
-                               variables_as_string = FALSE, # if FALSE factor_var_1 and factor_var_2 without "" - e.g cut, clarity 
-                               # if TRUE factor_var_1 and factor_var_2 in "" - e.g "cut", "clarity"
+                               variables_as_string = FALSE, # if FALSE factor_var_1 and factor_var_2 without "" 
+                               # if TRUE factor_var_1 and factor_var_2 in ""
                                
                                # Sample data from original datatset to make faster function compilation:
                                data_size = 1.0, # dataset size - e.g 1.0 (= 100% -> all observations), e.g 0.5 (= 50% -> half of observations)
@@ -54,7 +54,7 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
                                # Grid display parameters:
                                plot_grid = base::matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 8, 12, 13, 14, 15), byrow = TRUE, ncol = 4)){ # plot_grid default parameterization is recommended
   
-  # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
   # Packages and libraries installation:
   if (!require(ggplot2)){utils::install.packages('ggplot2'); require('ggplot2')}
   if (!require(tidyverse)){utils::install.packages('tidyverse'); require('tidyverse')}
@@ -74,6 +74,7 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
   # ------------------------------------------------------------------------------
   # Additional options:
   base::options(scipen = 20)
+  base::options(warn = -1)
   datetime <- stringr::str_replace_all(base::Sys.time(), ":", "-")
   
   # ------------------------------------------------------------------------------
@@ -656,8 +657,6 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
             plot_name <- base::paste0(save_filename, save_file_format)
             base::cat(base::paste(base::getwd(), plot_name, sep = "/")); base::cat("\n")}
         }
-        
-        # ------------------------------------------------------------------------------  
       } else {base::cat("ERROR: Type of provided factor_var_2 is not appropariate (require factor)"); base::cat("\n")}
     } else {base::cat("ERROR: Type of provided factor_var_1 is not appropariate (require factor)"); base::cat("\n")}
   } else {base::cat("ERROR: Type of provided data is not appropariate (require tibble or dataframe)"); base::cat("\n")}

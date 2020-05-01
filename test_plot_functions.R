@@ -99,7 +99,8 @@ all <- other <- diamonds %>%
   base::colnames(.) %>%
   base::expand.grid(., .) %>%
   dplyr::filter(Var1 != Var2) %>%
-  dplyr::transmute_all(as.character); all
+  dplyr::transmute_all(as.character) %>%
+  tibble::as_tibble(); all
 
 create_dir <- "plot_factor_factor all vs all"
 base::dir.create(create_dir)
@@ -117,6 +118,10 @@ for (i in 1:base::nrow(all)){
   base::setwd("..")}
 base::getwd()
 
-i <- 1
-
 # ------------------------------------------------------------------------------
+
+plot_factor_numeric(data = diamonds,
+                    factor_var = cut, factor_axis = "CUT",
+                    numeric_var = carat, numeric_axis = "CARAT",
+                    caption = "Diamonds", numeric_cuts = 10, grid_size = 10)
+
