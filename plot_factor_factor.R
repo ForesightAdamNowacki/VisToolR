@@ -664,5 +664,3 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
 
 # ------------------------------------------------------------------------------
 # https://github.com/ForesightAdamNowacki
-
-
