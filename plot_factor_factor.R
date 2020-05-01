@@ -40,7 +40,7 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
                                title_size = 9, # font size for title
                                text_size = 7, # font size for axises, labels, caption etc.
                                grid_size = 50, # graph grid density in waffle charts
-                               label_size = 4, # font size for labels
+                               label_size = 3, # font size for labels
                                
                                # Plot save parameters:
                                save_plots = FALSE, # FALSE - plot is not saved; TRUE - plot is saved
@@ -52,7 +52,7 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
                                save_plots_units = "cm", # file save units
                                
                                # Grid display parameters:
-                               plot_grid = base::matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 8, 12, 13, 14, 15), byrow = TRUE, ncol = 4)){
+                               plot_grid = base::matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 8, 12, 13, 14, 15), byrow = TRUE, ncol = 4)){ # plot_grid default parameterization is recommended
   
   # ------------------------------------------------------------------------------
   # Packages and libraries installation:
