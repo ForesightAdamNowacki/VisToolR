@@ -40,7 +40,7 @@ plot_factor_numeric <- function(data, #  data frame or tibble (obligatory parame
                                 # Additional parameters:
                                 title_size = 9, # font size for title
                                 text_size = 7, # font size for axises, labels, caption etc.
-                                histogram_bins = 10, 
+                                histogram_bins = 10, # number of bars in histogram for numeric variable
                                 numeric_cuts = 10, # cuts 
                                 grid_size = 50, # graph grid density in waffle charts
                                 label_size = 3, # font size for labels
