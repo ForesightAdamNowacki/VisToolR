@@ -39,8 +39,10 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
                                # Additional parameters:
                                title_size = 9, # font size for title
                                text_size = 7, # font size for axises, labels, caption etc.
-                               grid_size = 50, # graph grid density in waffle charts
+                               grid_size = 50, # graph grid density in waffle charts (recommended that the number be a multiple of 10)
                                label_size = 3, # font size for labels
+                               label_percent_round = 2, # number of decimal in percent labels
+                               percentage_breaks = 11, # number of breaks on percentage axis
                                
                                # Plot save parameters:
                                save_plots = FALSE, # FALSE - plot is not saved; TRUE - plot is saved
@@ -123,54 +125,56 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           ggplot2::geom_hline(yintercept = mean_value, lty = 2, lwd = 0.5, col = "black") +
           ggplot2::geom_bar(stat = "identity", position = "identity", color = "black") +
           ggplot2::labs(x = factor_axis_1, y = count_axis, title = title_1) +
-          ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(color = "black", linetype = "dotted"),
-                         panel.grid.major.y = element_line(color = "black", linetype = "dotted"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+          ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(color = "black", linetype = "dotted"),
+                         panel.grid.major.y = ggplot2::element_line(color = "black", linetype = "dotted"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_1_name)]])) + 1, "Greys")[-1]) +
-          ggplot2::scale_y_continuous(limits = base::c(0, 1.1 * base::max(data_cut$count))) -> plot1
+          ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.1)) -> plot1
         
         # ------------------------------------------------------------------------------          
         # PLOT 2:
         data %>% dplyr::select(!!factor_var_1) -> var; var <- base::c(var); var <- base::unlist(var)
         mean_value <- (base::length(var)/base::length(base::unique(data[[base::which(base::names(data) == factor_var_1_name)]])))/base::length(var)
-        ggplot2::ggplot(data = data_cut, mapping = aes(x = !!factor_var_1, y = percentage, fill = !!factor_var_1, label = paste(100 * round(percentage, 4), "%", sep = ""))) +
+        ggplot2::ggplot(data = data_cut, mapping = aes(x = !!factor_var_1, y = percentage, fill = !!factor_var_1, label = paste(100 * round(percentage, label_percent_round + 2), "%", sep = ""))) +
           ggplot2::geom_hline(yintercept = mean_value, lty = 2, lwd = 0.5, col = "black") +
           ggplot2::geom_bar(stat = "identity", position = "identity", color = "black") +
           ggplot2::labs(x = factor_axis_1, y = percentage_axis, title = title_2) +
-          ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(color = "black", linetype = "dotted"),
-                         panel.grid.major.y = element_line(color = "black", linetype = "dotted"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+          ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(color = "black", linetype = "dotted"),
+                         panel.grid.major.y = ggplot2::element_line(color = "black", linetype = "dotted"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") +
-          ggplot2::scale_y_continuous(limits = base::c(0, 1.1 * max(data_cut$percentage)),
-                                      labels = base::c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"),
-                                      breaks = base::c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)) +
+          ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.1),
+                                      labels = scales::percent_format(accuracy = 1), 
+                                      breaks = base::seq(from = 0, to = 1, length.out = percentage_breaks)) +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_1_name)]])) + 1, "Greys")[-1]) -> plot2
         
         # ------------------------------------------------------------------------------
@@ -193,23 +197,23 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           ggplot2::scale_x_continuous(expand = base::c(0, 0)) +
           ggplot2::scale_y_continuous(expand = base::c(0, 0), trans = "reverse") + #, trans = "reverse"
           ggplot2::labs(title = title_3) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.title.x = element_blank(),
-                         axis.text.x = element_blank(),
-                         axis.ticks.x = element_blank(),
-                         axis.title.y = element_blank(),
-                         axis.text.y = element_blank(),
-                         axis.ticks.y = element_blank(),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
-                         legend.box.background = element_rect(color = "black", size = 0.5, linetype = "solid"),
-                         legend.background = element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.title.x = ggplot2::element_blank(),
+                         axis.text.x = ggplot2::element_blank(),
+                         axis.ticks.x = ggplot2::element_blank(),
+                         axis.title.y = ggplot2::element_blank(),
+                         axis.text.y = ggplot2::element_blank(),
+                         axis.ticks.y = ggplot2::element_blank(),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+                         legend.box.background = ggplot2::element_rect(color = "black", size = 0.5, linetype = "solid"),
+                         legend.background = ggplot2::element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
                          legend.position = "right",
-                         legend.box.spacing = unit(0.25, "cm"),
-                         legend.text = element_text(size = text_size, color = "black", face = "plain"),
-                         legend.title = element_text(size = text_size, color = "black", face = "bold")) +
+                         legend.box.spacing = ggplot2::unit(0.25, "cm"),
+                         legend.text = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         legend.title = ggplot2::element_text(size = text_size, color = "black", face = "bold")) +
           ggplot2::guides(fill = guide_legend(paste(factor_axis_1, ":", sep = ""), ncol = 1)) +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_1_name)]])) + 1, "Greys")[-1]) -> plot3
         
@@ -228,25 +232,25 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
         ggplot2::ggplot() +
           ggplot2::geom_polygon(data = ggplot_circle_data, aes(x, y, group = id, fill = as.factor(id)), colour = "black") +
           ggplot2::geom_label(data = data_packing, aes(x = x, y = y, label = !!factor_var_1), color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white", 
-                              label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
           ggplot2::scale_size_continuous(range = base::c(1,4)) +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(length(unique(data[[which(names(data) == factor_var_1_name)]])) + 1, "Greys")[-1]) +
           ggplot2::labs(title = title_4, caption = "") +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.title.x = element_blank(),
-                         axis.text.x = element_blank(),
-                         axis.ticks.x = element_blank(),
-                         axis.title.y = element_blank(),
-                         axis.text.y = element_blank(),
-                         axis.ticks.y = element_blank(),
-                         panel.grid.major.x = element_line(linetype = "blank"),
-                         panel.grid.major.y = element_line(linetype = "blank"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.title.x = ggplot2::element_blank(),
+                         axis.text.x = ggplot2::element_blank(),
+                         axis.ticks.x = ggplot2::element_blank(),
+                         axis.title.y = ggplot2::element_blank(),
+                         axis.text.y = ggplot2::element_blank(),
+                         axis.ticks.y = ggplot2::element_blank(),
+                         panel.grid.major.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.major.y = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") -> plot4
         
         # ------------------------------------------------------------------------------   
@@ -260,24 +264,24 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           ggplot2::ggplot(data = ., mapping = aes(x = !!factor_var_2, y = !!factor_var_1, fill = n, label = n)) +
           ggplot2::geom_tile(colour = "black") +
           ggplot2::geom_label(aes(x = !!factor_var_2, y = !!factor_var_1), color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
-                              label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
           ggplot2::scale_fill_gradientn(colours = base::c("white", "black"), values = base::c(0, 1)) +
           ggplot2::labs(x = factor_axis_2, y = factor_axis_1, title = title_5) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(linetype = "blank"),
-                         panel.grid.major.y = element_line(linetype = "blank"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.major.y = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") -> plot5
         
         # ------------------------------------------------------------------------------       
@@ -295,29 +299,29 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           dplyr::ungroup() %>%
           tidyr::complete(!!factor_var_1, !!factor_var_2, fill = base::list(count_1 = 0)) %>%
           dplyr::left_join(t1, by = factor_var_1_name) %>%
-          dplyr::mutate(percent = base::round(100 * count_1/count_2, 2)) %>%
+          dplyr::mutate(percent = base::round(100 * count_1/count_2, label_percent_round)) %>%
           dplyr::select(!!factor_var_1, !!factor_var_2, percent) %>%
           ggplot2::ggplot(mapping = aes(x = !!factor_var_1, y = !!factor_var_2, fill = percent, label = base::paste0(percent, "%"))) +
           ggplot2::geom_tile(colour = "black") +
           ggplot2::geom_label(aes(x = !!factor_var_1, y = !!factor_var_2), color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
-                              label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
           ggplot2::scale_fill_gradientn(colours = base::c("white", "black"), values = base::c(0, 1)) +
           ggplot2::labs(x = factor_axis_1, y = factor_axis_2, title = title_6) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(linetype = "blank"),
-                         panel.grid.major.y = element_line(linetype = "blank"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.major.y = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") -> plot6
         
         # ------------------------------------------------------------------------------    
@@ -335,29 +339,29 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           dplyr::ungroup() %>%
           tidyr::complete(!!factor_var_2, !!factor_var_1, fill = base::list(count_1 = 0)) %>%
           dplyr::left_join(t1, by = factor_var_2_name) %>%
-          dplyr::mutate(percent = base::round(100 * count_1/count_2, 2)) %>%
+          dplyr::mutate(percent = base::round(100 * count_1/count_2, label_percent_round)) %>%
           dplyr::select(!!factor_var_2, !!factor_var_1, percent) %>%
           ggplot2::ggplot(mapping = aes(x = !!factor_var_2, y = !!factor_var_1, fill = percent, label = base::paste0(percent, "%"))) +
           ggplot2::geom_tile(colour = "black") +
           ggplot2::geom_label(aes(x = !!factor_var_2, y = !!factor_var_1), color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
-                              label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
           ggplot2::scale_fill_gradientn(colours = base::c("white", "black"), values = base::c(0, 1)) +
           ggplot2::labs(x = factor_axis_2, y = factor_axis_1, title = title_7) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(linetype = "blank"),
-                         panel.grid.major.y = element_line(linetype = "blank"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.major.y = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") -> plot7
         
         # ------------------------------------------------------------------------------          
@@ -371,7 +375,8 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           dplyr::select(!!factor_var_1, !!factor_var_2, n) %>%
           tidyr::complete(!!factor_var_1, !!factor_var_2, fill = base::list(n = 0)) -> data_plot
         data_plot <- base::as.data.frame(data_plot)
-        ggparallel::ggparallel(vars = base::list(base::names(data_plot)[c(base::which(base::names(data_plot) == factor_var_1_name), base::which(base::names(data_plot) == factor_var_2_name))]), data = data_plot, weight = "n", method = "parset", text.angle = 0, label = FALSE, order = 0) +
+        ggparallel::ggparallel(vars = base::list(base::names(data_plot)[c(base::which(base::names(data_plot) == factor_var_1_name), base::which(base::names(data_plot) == factor_var_2_name))]), 
+                               data = data_plot, weight = "n", method = "parset", text.angle = 0, label = FALSE, order = 0) +
           ggplot2::scale_fill_manual(values = base::c(rep("gray60", base::length(base::unique(data_plot[[base::which(base::names(data_plot) == factor_var_2_name)]])) + length(unique(data_plot[[which(names(data_plot) == factor_var_1_name)]]))))) +
           ggplot2::scale_colour_manual(values = base::c(rep("gray50", base::length(base::unique(data_plot[[base::which(base::names(data_plot) == factor_var_2_name)]]))),
                                                         rep("gray50", base::length(base::unique(data_plot[[base::which(base::names(data_plot) == factor_var_1_name)]]))))) -> p1
@@ -381,22 +386,22 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           dplyr::mutate(x = (xmin + xmax)/2, y = (ymin + ymax)/2, label = base::c(base::levels(data[[base::which(base::names(data) == factor_var_1_name)]]), base::levels(data[[base::which(base::names(data) == factor_var_2_name)]]))) -> abc
         p1 +
           geom_label(data = abc, mapping = aes(x = x, y = y, label = label), color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
-                     label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(linetype = "blank"),
-                         panel.grid.major.y = element_line(linetype = "blank"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+                     label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.major.y = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") +
           ggplot2::labs(x = "FACTOR VARIABLES", y = count_axis, title = title_8) -> plot8
         
@@ -410,27 +415,27 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           dplyr::ungroup() %>%
           dplyr::select(!!factor_var_1, !!factor_var_2, percent) %>%
           tidyr::complete(!!factor_var_1, !!factor_var_2, fill = base::list(percent = 0)) %>%
-          ggplot2::ggplot(data = ., mapping = aes(x = !!factor_var_2, y = !!factor_var_1, fill = percent, label = base::paste0(base::round(percent, 2), "%"))) +
+          ggplot2::ggplot(data = ., mapping = aes(x = !!factor_var_2, y = !!factor_var_1, fill = percent, label = base::paste0(base::round(percent, label_percent_round), "%"))) +
           ggplot2::geom_tile(colour = "black") +
           ggplot2::geom_label(aes(x = !!factor_var_2, y = !!factor_var_1), color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
-                              label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
           ggplot2::scale_fill_gradientn(colours = base::c("white", "black"), values = base::c(0, 1)) +
           ggplot2::labs(x = factor_axis_2, y = factor_axis_1, title = title_9) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(linetype = "blank"),
-                         panel.grid.major.y = element_line(linetype = "blank"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.major.y = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") -> plot9
         
         # ------------------------------------------------------------------------------
@@ -438,31 +443,31 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
         ggplot2::ggplot(data = data, mapping = aes(x = !!factor_var_1, fill = !!factor_var_2)) +
           ggplot2::geom_bar(position = "fill", color = "black") +
           ggplot2::labs(x = factor_axis_1, y = percentage_axis, title = title_10) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(linetype = "blank"),
-                         panel.grid.major.y = element_line(linetype = "blank"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
-                         legend.box.background = element_rect(color = "black", size = 0.5, linetype = "solid"),
-                         legend.background = element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.major.y = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+                         legend.box.background = ggplot2::element_rect(color = "black", size = 0.5, linetype = "solid"),
+                         legend.background = ggplot2::element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
                          legend.position = "right",
-                         legend.box.spacing = unit(0.25, "cm"),
-                         legend.text = element_text(size = text_size, color = "black", face = "plain"),
-                         legend.title = element_text(size = text_size, color = "black", face = "bold"),
-                         legend.key = element_rect(colour = "gray90")) +
+                         legend.box.spacing = ggplot2::unit(0.25, "cm"),
+                         legend.text = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         legend.title = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         legend.key = ggplot2::element_rect(colour = "gray90")) +
           ggplot2::scale_y_continuous(limits = base::c(0, 1), 
-                                      labels = base::c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"), 
-                                      breaks = base::c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)) +
+                                      labels = scales::percent_format(accuracy = 1), 
+                                      breaks = base::seq(from = 0, to = 1, length.out = percentage_breaks)) +
           ggplot2::guides(fill = guide_legend(paste(factor_axis_2, ":", sep = ""), ncol = 1)) +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_2_name)]])) + 1, "Greys")[-1]) -> plot10
         
@@ -471,31 +476,31 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
         ggplot2::ggplot(data = data, mapping = aes(x = !!factor_var_2, fill = !!factor_var_1)) +
           ggplot2::geom_bar(position = "fill", color = "black") +
           ggplot2::labs(x = factor_axis_2, y = percentage_axis, title = title_11) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(linetype = "blank"),
-                         panel.grid.major.y = element_line(linetype = "blank"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
-                         legend.box.background = element_rect(color = "black", size = 0.5, linetype = "solid"),
-                         legend.background = element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.major.y = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+                         legend.box.background = ggplot2::element_rect(color = "black", size = 0.5, linetype = "solid"),
+                         legend.background = ggplot2::element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
                          legend.position = "right",
-                         legend.box.spacing = unit(0.25, "cm"),
-                         legend.text = element_text(size = text_size, color = "black", face = "plain"),
-                         legend.title = element_text(size = text_size, color = "black", face = "bold"),
-                         legend.key = element_rect(colour = "gray90")) +
-          ggplot2::scale_y_continuous(limits = base::c(0, 1),
-                                      labels = base::c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"), 
-                                      breaks = base::c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)) +
+                         legend.box.spacing = ggplot2::unit(0.25, "cm"),
+                         legend.text = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         legend.title = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         legend.key = ggplot2::element_rect(colour = "gray90")) +
+          ggplot2::scale_y_continuous(limits = base::c(0, 1), 
+                                      labels = scales::percent_format(accuracy = 1), 
+                                      breaks = base::seq(from = 0, to = 1, length.out = percentage_breaks)) +
           ggplot2::guides(fill = guide_legend(paste(factor_axis_1, ":", sep = ""), ncol = 1)) +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_1_name)]])) + 1, "Greys")[-1]) -> plot11
         
@@ -513,55 +518,55 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           ggplot2::geom_bar(stat = "identity", position = "identity", color = "black") +
           ggplot2::labs(x = factor_axis_2, y = count_axis, title = title_12) +
           ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
-                              label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(color = "black", linetype = "dotted"),
-                         panel.grid.major.y = element_line(color = "black", linetype = "dotted"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(color = "black", linetype = "dotted"),
+                         panel.grid.major.y = ggplot2::element_line(color = "black", linetype = "dotted"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_2_name)]])) + 1, "Greys")[-1]) +
-          ggplot2::scale_y_continuous(limits = base::c(0, 1.1 * base::max(data_cut$count))) -> plot12
+          ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.1)) -> plot12
         
         # ------------------------------------------------------------------------------        
         # PLOT 13:
         data %>% dplyr::select(!!factor_var_2) -> var; var <- base::c(var); var <- base::unlist(var)
         mean_value <- (base::length(var)/base::length(base::unique(data[[base::which(base::names(data) == factor_var_2_name)]])))/base::length(var)
-        ggplot2::ggplot(data = data_cut, mapping = aes(x = !!factor_var_2, y = percentage, fill = !!factor_var_2, label = paste(100 * round(percentage, 4), "%", sep = ""))) +
+        ggplot2::ggplot(data = data_cut, mapping = aes(x = !!factor_var_2, y = percentage, fill = !!factor_var_2, label = paste(100 * round(percentage, label_percent_round + 2), "%", sep = ""))) +
           ggplot2::geom_hline(yintercept = mean_value, lty = 2, lwd = 0.5, col = "black") +
           ggplot2::geom_bar(stat = "identity", position = "identity", color = "black") +
           ggplot2::labs(x = factor_axis_2, y = percentage_axis, title = title_13) +
           ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
-                              label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.text.y = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.text.x = element_text(size = text_size, color = "black", face = "plain"),
-                         axis.title.y = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.title.x = element_text(size = text_size, color = "black", face = "bold"),
-                         axis.ticks = element_line(size = 1, color = "black", linetype = "solid"),
-                         axis.ticks.length = unit(0.1, "cm"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         panel.grid.major.x = element_line(color = "black", linetype = "dotted"),
-                         panel.grid.major.y = element_line(color = "black", linetype = "dotted"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         axis.title.y = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.title.x = ggplot2::element_text(size = text_size, color = "black", face = "bold"),
+                         axis.ticks = ggplot2::element_line(size = 1, color = "black", linetype = "solid"),
+                         axis.ticks.length = ggplot2::unit(0.1, "cm"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         panel.grid.major.x = ggplot2::element_line(color = "black", linetype = "dotted"),
+                         panel.grid.major.y = ggplot2::element_line(color = "black", linetype = "dotted"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") +
-          ggplot2::scale_y_continuous(limits = base::c(0, 1.1 * base::max(data_cut$percentage)), 
-                                      labels = base::c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"),
-                                      breaks = base::c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)) +
+          ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.1),
+                                      labels = scales::percent_format(accuracy = 1), 
+                                      breaks = base::seq(from = 0, to = 1, length.out = percentage_breaks)) +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_2_name)]])) + 1, "Greys")[-1]) -> plot13
         
         # ------------------------------------------------------------------------------       
@@ -584,23 +589,23 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
           ggplot2::scale_x_continuous(expand = base::c(0, 0)) +
           ggplot2::scale_y_continuous(expand = base::c(0, 0), trans = "reverse") + #, trans = "reverse"
           ggplot2::labs(title = title_14) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.title.x = element_blank(),
-                         axis.text.x = element_blank(),
-                         axis.ticks.x = element_blank(),
-                         axis.title.y = element_blank(),
-                         axis.text.y = element_blank(),
-                         axis.ticks.y = element_blank(),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
-                         legend.box.background = element_rect(color = "black", size = 0.5, linetype = "solid"),
-                         legend.background = element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.title.x = ggplot2::element_blank(),
+                         axis.text.x = ggplot2::element_blank(),
+                         axis.ticks.x = ggplot2::element_blank(),
+                         axis.title.y = ggplot2::element_blank(),
+                         axis.text.y = ggplot2::element_blank(),
+                         axis.ticks.y = ggplot2::element_blank(),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+                         legend.box.background = ggplot2::element_rect(color = "black", size = 0.5, linetype = "solid"),
+                         legend.background = ggplot2::element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
                          legend.position = "right",
-                         legend.box.spacing = unit(0.25, "cm"),
-                         legend.text = element_text(size = text_size, color = "black", face = "plain"),
-                         legend.title = element_text(size = text_size, color = "black", face = "bold")) +
+                         legend.box.spacing = ggplot2::unit(0.25, "cm"),
+                         legend.text = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
+                         legend.title = ggplot2::element_text(size = text_size, color = "black", face = "bold")) +
           ggplot2::guides(fill = guide_legend(base::paste(factor_axis_2, ":", sep = ""), ncol = 1)) +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_2_name)]])) + 1, "Greys")[-1]) -> plot14
         
@@ -619,26 +624,27 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
         ggplot2::ggplot() +
           ggplot2::geom_polygon(data = ggplot_circle_data, aes(x, y, group = id, fill = base::as.factor(id)), colour = "black") +
           ggplot2::geom_label(data = data_packing, aes(x = x, y = y, label = !!factor_var_2), color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
-                              label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
+                              label.padding = ggplot2::unit(0.15, "lines"), label.r = ggplot2::unit(0, "lines")) +
           ggplot2::scale_size_continuous(range = base::c(1,4)) +
           ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(base::length(base::unique(data[[base::which(base::names(data) == factor_var_2_name)]])) + 1, "Greys")[-1]) +
-          ggplot2::labs(title = title_15,  caption = caption) +
-          ggplot2::theme(plot.title = element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
-                         axis.title.x = element_blank(),
-                         axis.text.x = element_blank(),
-                         axis.ticks.x = element_blank(),
-                         axis.title.y = element_blank(),
-                         axis.text.y = element_blank(),
-                         axis.ticks.y = element_blank(),
-                         panel.grid.major.x = element_line(linetype = "blank"),
-                         panel.grid.major.y = element_line(linetype = "blank"),
-                         panel.grid.minor.x = element_line(linetype = "blank"),
-                         panel.grid.minor.y = element_line(linetype = "blank"),
-                         plot.background = element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
-                         panel.background = element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
-                         panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
-                         plot.caption = element_text(size = text_size, color = "black", face = "bold", hjust = 1),
+          ggplot2::labs(title = title_15, caption = caption) +
+          ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
+                         axis.title.x = ggplot2::element_blank(),
+                         axis.text.x = ggplot2::element_blank(),
+                         axis.ticks.x = ggplot2::element_blank(),
+                         axis.title.y = ggplot2::element_blank(),
+                         axis.text.y = ggplot2::element_blank(),
+                         axis.ticks.y = ggplot2::element_blank(),
+                         panel.grid.major.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.major.y = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.x = ggplot2::element_line(linetype = "blank"),
+                         panel.grid.minor.y = ggplot2::element_line(linetype = "blank"),
+                         plot.background = ggplot2::element_rect(fill = "gray80", color = "black", size = 1, linetype = "solid"),
+                         panel.background = ggplot2::element_rect(fill = "gray90", color = "black", size = 0.5, linetype = "solid"),
+                         panel.border = ggplot2::element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid"),
+                         plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.position = "none") -> plot15
+        
         # ------------------------------------------------------------------------------    
         # Save plots:
         plots <- gridExtra::grid.arrange(gridExtra::arrangeGrob(plot1, plot2, plot3, plot4,

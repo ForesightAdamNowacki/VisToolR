@@ -24,7 +24,7 @@ plot_factor_factor(data = diamonds,
                    factor_var_1 = "cut",
                    factor_var_2 = "clarity",
                    variables_as_string = TRUE,
-                   data_size = 0.5,
+                   data_size = 0.25,
                    seed_value = 10)
 
 # 3. Set axises names and caption:
@@ -40,16 +40,17 @@ plot_factor_factor(data = diamonds,
 plot_factor_factor(data = diamonds,
                    factor_var_1 = "cut",
                    factor_var_2 = "clarity",
-                   title_size = 9,
-                   text_size = 8,
-                   label_size = 3.5,
+                   title_size = 11,
+                   text_size = 9,
+                   label_size = 5,
                    variables_as_string = TRUE)
 
-# 5. Change grid density in waffle chart:
+# 5. Change grid density in waffle chart and percentage breaks:
 plot_factor_factor(data = diamonds,
                    factor_var_1 = "cut",
                    factor_var_2 = "clarity",
                    grid_size = 10,
+                   percentage_breaks = 6,
                    variables_as_string = TRUE)
 
 # 6. Save options (default options):
@@ -148,8 +149,8 @@ plot_factor_numeric(data = diamonds,
                     caption = "DIAMONDS",
                     variables_as_string = TRUE)
 
-# 4. Change font of titles, labels and axises and number of decimals in 
-# distribution quantile cut plot:
+# 4. Change font of titles, labels and axises,  number of decimals in 
+# distribution quantile cut plot and percentage breaks:
 plot_factor_numeric(data = diamonds,
                     factor_var = "cut",
                     numeric_var = "carat",
@@ -157,6 +158,7 @@ plot_factor_numeric(data = diamonds,
                     text_size = 8,
                     label_size = 4,
                     digits_lab = 5,
+                    percentage_breaks = 6,
                     variables_as_string = TRUE)
 
 # 5. Change:

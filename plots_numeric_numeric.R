@@ -528,7 +528,7 @@ plot_numeric_numeric <- function(data, #  data frame or tibble (obligatory param
             ggplot2::geom_histogram(stat = "identity", binwidth = 0, width = 1, col = "black", lwd = 0.5, fill = "gray60") +
             ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
                                 label.padding = unit(0.15, "lines"), label.r = unit(0, "lines")) +
-            ggplot2::labs(x = numeric_axis_2, y = count_axis, title = title_2) +
+            ggplot2::labs(x = numeric_axis_2, y = count_axis, title = title_14) +
             ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                            axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
                            axis.text.x = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
