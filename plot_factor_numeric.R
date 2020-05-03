@@ -621,7 +621,7 @@ plot_factor_numeric <- function(data, #  data frame or tibble (obligatory parame
         # ------------------------------------------------------------------------------       
         # PLOT 16:
         ggplot2::ggplot(data = data, aes(x = !!numeric_var)) +
-          ggplot2::stat_density(fill = "gray60", color = "black", lwd = 0.5) +
+          ggplot2::geom_density(aes(!!numeric_var, ..scaled..), fill = "gray60", color = "black", lwd = 0.5) +
           ggplot2::stat_ecdf(lwd = 1, color = "black") +
           ggplot2::labs(x = numeric_axis, y = percentage_axis, title = title_16, caption = caption) +
           ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
