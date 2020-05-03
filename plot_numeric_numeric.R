@@ -154,6 +154,8 @@ plot_numeric_numeric <- function(data, #  data frame or tibble (obligatory param
           dplyr::mutate(cuts = ggplot2::cut_interval(!!numeric_var_1, n = histogram_bars_1, dig.lab = digits_lab_1)) %>%
           dplyr::group_by(cuts) %>%
           dplyr::summarise(n = dplyr::n()) %>%
+          dplyr::ungroup() %>%
+          tidyr::complete(cuts, fill = base::list(n = 0)) %>%
           ggplot2::ggplot(data = ., mapping = ggplot2::aes(x = cuts, y = n, label = n)) +
           ggplot2::geom_histogram(stat = "identity", binwidth = 0, width = 1, col = "black", lwd = 0.5, fill = "gray60") +
           ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",
@@ -526,6 +528,8 @@ plot_numeric_numeric <- function(data, #  data frame or tibble (obligatory param
           dplyr::mutate(cuts = ggplot2::cut_interval(!!numeric_var_2, n = histogram_bars_2, dig.lab = digits_lab_2)) %>%
           dplyr::group_by(cuts) %>%
           dplyr::summarise(n = dplyr::n()) %>%
+          dplyr::ungroup() %>%
+          tidyr::complete(cuts, fill = base::list(n = 0)) %>%
           ggplot2::ggplot(data = ., mapping = ggplot2::aes(x = cuts, y = n, label = n)) +
           ggplot2::geom_histogram(stat = "identity", binwidth = 0, width = 1, col = "black", lwd = 0.5, fill = "gray60") +
           ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",

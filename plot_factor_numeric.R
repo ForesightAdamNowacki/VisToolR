@@ -416,7 +416,7 @@ plot_factor_numeric <- function(data, #  data frame or tibble (obligatory parame
                          plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.box.background = ggplot2::element_rect(color = "black", size = 0.5, linetype = "solid"),
                          legend.background = ggplot2::element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
-                         legend.position = "bottom",
+                         legend.position = "none",
                          legend.box.spacing = ggplot2::unit(0.25, "cm"),
                          legend.text = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
                          legend.title = ggplot2::element_text(size = text_size, color = "black", face = "bold")) +
@@ -462,7 +462,7 @@ plot_factor_numeric <- function(data, #  data frame or tibble (obligatory parame
                          plot.caption = ggplot2::element_text(size = text_size, color = "black", face = "bold", hjust = 1),
                          legend.box.background = ggplot2::element_rect(color = "black", size = 0.5, linetype = "solid"),
                          legend.background = ggplot2::element_rect(fill = "gray90", size = 0.5, linetype = "solid", color = "black"),
-                         legend.position = "bottom",
+                         legend.position = "none",
                          legend.box.spacing = ggplot2::unit(0.25, "cm"),
                          legend.text = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
                          legend.title = ggplot2::element_text(size = text_size, color = "black", face = "bold")) +
@@ -470,9 +470,20 @@ plot_factor_numeric <- function(data, #  data frame or tibble (obligatory parame
         
         # ------------------------------------------------------------------------------
         # PLOT 11:
-        data %>% dplyr::mutate(cuts = ggplot2::cut_interval(!!numeric_var, n = numeric_cuts, dig.lab = digits_lab)) -> data
-        ggplot2::ggplot(data = data, aes(x = cuts, fill = !!factor_var)) +
-          ggplot2::geom_bar(position = "fill", color = "black") +  
+        data %>% 
+          dplyr::mutate(cuts = ggplot2::cut_interval(!!numeric_var, n = numeric_cuts, dig.lab = digits_lab)) %>%
+          dplyr::select(!!factor_var, cuts) %>%
+          dplyr::group_by(!!factor_var, cuts) %>%
+          dplyr::mutate(n_class = dplyr::n()) %>%
+          dplyr::group_by(cuts) %>%
+          dplyr::mutate(n_all = dplyr::n()) %>%
+          dplyr::ungroup() %>%
+          dplyr::distinct() %>%
+          dplyr::mutate(prop = n_class/n_all) %>%
+          dplyr::select(!!factor_var, cuts, prop) %>%
+          tidyr::complete(!!factor_var, cuts, fill = base::list(prop = 0)) %>%
+          ggplot2::ggplot(data = ., mapping = ggplot2::aes(y = prop, x = cuts, fill = !!factor_var)) +
+          ggplot2::geom_bar(stat = "identity", color = "black") +
           ggplot2::labs(x = numeric_axis, y = percentage_axis, title = title_11) +
           ggplot2::theme(plot.title = ggplot2::element_text(size = title_size, color = "black", face = "bold", hjust = 0.5, vjust = 0.5),
                          axis.text.y = ggplot2::element_text(size = text_size, color = "black", face = "plain"),
@@ -572,6 +583,8 @@ plot_factor_numeric <- function(data, #  data frame or tibble (obligatory parame
           dplyr::mutate(cuts = ggplot2::cut_interval(!!numeric_var, n = histogram_bars, dig.lab = digits_lab)) %>%
           dplyr::group_by(cuts) %>%
           dplyr::summarise(n = dplyr::n()) %>%
+          dplyr::ungroup() %>%
+          tidyr::complete(cuts, fill = base::list(n = 0)) %>%
           ggplot2::ggplot(data = ., mapping = ggplot2::aes(x = cuts, y = n, label = n)) +
           ggplot2::geom_histogram(stat = "identity", binwidth = 0, width = 1, col = "black", lwd = 0.5, fill = "gray60") +
           ggplot2::geom_label(color = "black", size = label_size, label.size = 0.5, fontface = 1, fill = "white",

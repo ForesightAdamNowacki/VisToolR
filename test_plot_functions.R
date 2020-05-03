@@ -336,7 +336,7 @@ plot_numeric_numeric(data = diamonds,
 plot_numeric_numeric(data = diamonds,
                      numeric_var_1 = "price",
                      numeric_var_2 = "carat",
-                     save_plots = TRUE, # uncomment to save
+                     # save_plots = TRUE, # uncomment to save
                      variables_as_string = TRUE)
 
 # 7. Save options (custom options):
@@ -380,7 +380,8 @@ all <- diamonds %>%
   base::expand.grid(., .) %>%
   dplyr::filter(Var1 != Var2) %>%
   dplyr::transmute_all(as.character) %>%
-  tibble::as_tibble(); all
+  tibble::as_tibble() %>%
+  base::data.frame(); all
 
 create_dir <- "plot_numeric_numeric_all_vs_all"
 base::dir.create(create_dir)
@@ -394,3 +395,6 @@ for (i in 1:base::nrow(all)){
                      variables_as_string = TRUE,
                      save_plots = TRUE)
   base::setwd("..")}
+
+
+
