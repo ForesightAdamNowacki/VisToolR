@@ -17,6 +17,7 @@ plot_factor_factor(data = diamonds,
 plot_factor_factor(data = diamonds,
                    factor_var_1 = "cut",
                    factor_var_2 = "clarity",
+                   label_percent_round = 1,
                    variables_as_string = TRUE)
 
 # 2. Diminish dataset to speed up function compilation:
@@ -257,3 +258,8 @@ for (i in 1:base::nrow(all)){
                       save_plots = TRUE,
                       variables_as_string = TRUE)
   base::setwd("..")}
+
+
+
+
+scales::percent_format()

@@ -41,7 +41,7 @@ plot_factor_factor <- function(data, # data frame or tibble (obligatory paramete
                                text_size = 7, # font size for axises, labels, caption etc.
                                grid_size = 50, # graph grid density in waffle charts (recommended that the number be a multiple of 10)
                                label_size = 3, # font size for labels
-                               label_percent_round = 2, # number of decimal in percent labels
+                               label_percent_round = 1, # number of decimal in percent labels
                                percentage_breaks = 11, # number of breaks on percentage axis
                                
                                # Plot save parameters:
