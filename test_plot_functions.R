@@ -128,7 +128,7 @@ for (i in 1:base::nrow(all)){
   base::setwd("..")}
 
 # ------------------------------------------------------------------------------
-# Function - plot_factor_factor:
+# Function - plot_factor_numeric:
 # 1. Basic function usage:
 plot_factor_numeric(data = diamonds,
                     factor_var = cut,

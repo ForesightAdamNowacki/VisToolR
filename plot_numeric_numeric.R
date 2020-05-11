@@ -601,6 +601,7 @@ plot_numeric_numeric <- function(data, #  data frame or tibble (obligatory param
           ggplot2::scale_y_continuous(limits = base::c(0, 1),
                                       labels = scales::percent_format(accuracy = 1), 
                                       breaks = base::seq(from = 0, to = 1, length.out = percentage_breaks)) -> plot16
+      
         
         # ------------------------------------------------------------------------------       
         # Save plots:
@@ -624,4 +625,5 @@ plot_numeric_numeric <- function(data, #  data frame or tibble (obligatory param
     } else {base::cat("ERROR: Type of provided numeric_var_1 is not appropariate (require numeric or integer)"); base::cat("\n")}
   } else {base::cat("ERROR: Type of provided data is not appropariate (require tibble or dataframe)"); base::cat("\n")}
 }
+
 
